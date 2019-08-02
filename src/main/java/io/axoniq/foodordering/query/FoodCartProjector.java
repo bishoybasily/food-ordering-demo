@@ -9,38 +9,46 @@ import org.axonframework.queryhandling.QueryHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 class FoodCartProjector {
 
-    private final FoodCartViewRepository foodCartViewRepository;
+    private static final Map<String, FoodCartView> DATA_STORE = new HashMap<>();
 
-    public FoodCartProjector(FoodCartViewRepository foodCartViewRepository) {
-        this.foodCartViewRepository = foodCartViewRepository;
-    }
+//    private final FoodCartViewRepository foodCartViewRepository;
+//
+//    public FoodCartProjector(FoodCartViewRepository foodCartViewRepository) {
+//        this.foodCartViewRepository = foodCartViewRepository;
+//    }
 
     @EventHandler
     public void on(FoodCartCreatedEvent event) {
         FoodCartView foodCartView = new FoodCartView(event.getFoodCartId(), Collections.emptyMap());
-        foodCartViewRepository.save(foodCartView);
+        DATA_STORE.put(event.getFoodCartId(), foodCartView);
+//        foodCartViewRepository.save(foodCartView);
     }
 
     @EventHandler
     public void on(ProductSelectedEvent event) {
-        foodCartViewRepository.findById(event.getFoodCartId()).ifPresent(
-                foodCartView -> foodCartView.addProducts(event.getProductId(), event.getQuantity())
-        );
+        DATA_STORE.get(event.getFoodCartId()).addProducts(event.getProductId(), event.getQuantity());
+//        foodCartViewRepository.findById(event.getFoodCartId()).ifPresent(
+//                foodCartView -> foodCartView.addProducts(event.getProductId(), event.getQuantity())
+//        );
     }
 
     @EventHandler
     public void on(ProductDeselectedEvent event) {
-        foodCartViewRepository.findById(event.getFoodCartId()).ifPresent(
-                foodCartView -> foodCartView.removeProducts(event.getProductId(), event.getQuantity())
-        );
+        DATA_STORE.get(event.getFoodCartId()).removeProducts(event.getProductId(), event.getQuantity());
+//        foodCartViewRepository.findById(event.getFoodCartId()).ifPresent(
+//                foodCartView -> foodCartView.removeProducts(event.getProductId(), event.getQuantity())
+//        );
     }
 
     @QueryHandler
     public FoodCartView handle(FindFoodCartQuery query) {
-        return foodCartViewRepository.findById(query.getFoodCartId()).orElse(null);
+        return DATA_STORE.get(query.getFoodCartId());
+//        return foodCartViewRepository.findById(query.getFoodCartId()).orElse(null);
     }
 }

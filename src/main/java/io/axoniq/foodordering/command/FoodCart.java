@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Aggregate
 class FoodCart {
@@ -19,8 +18,8 @@ class FoodCart {
     private static final Logger logger = LoggerFactory.getLogger(FoodCart.class);
 
     @AggregateIdentifier
-    private UUID foodCartId;
-    private Map<UUID, Integer> selectedProducts;
+    private String foodCartId;
+    private Map<String, Integer> selectedProducts = new HashMap<>();
     private boolean confirmed;
 
     public FoodCart() {
@@ -29,8 +28,7 @@ class FoodCart {
 
     @CommandHandler
     public FoodCart(CreateFoodCartCommand command) {
-        UUID aggregateId = UUID.randomUUID();
-        AggregateLifecycle.apply(new FoodCartCreatedEvent(aggregateId));
+        AggregateLifecycle.apply(new FoodCartCreatedEvent(command.getFoodCartId()));
     }
 
     @CommandHandler
@@ -40,7 +38,7 @@ class FoodCart {
 
     @CommandHandler
     public void handle(DeselectProductCommand command) throws ProductDeselectionException {
-        UUID productId = command.getProductId();
+        String productId = command.getProductId();
         int quantity = command.getQuantity();
 
         if (!selectedProducts.containsKey(productId)) {

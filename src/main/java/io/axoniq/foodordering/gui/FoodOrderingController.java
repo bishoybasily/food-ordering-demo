@@ -8,9 +8,9 @@ import io.axoniq.foodordering.query.FoodCartView;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RequestMapping("/foodCart")
@@ -25,34 +25,37 @@ class FoodOrderingController {
         this.queryGateway = queryGateway;
     }
 
-    @PostMapping("/create")
-    public CompletableFuture<UUID> createFoodCart() {
-        return commandGateway.send(new CreateFoodCartCommand());
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public CompletableFuture<Object> createFoodCart(@RequestParam String id) {
+        return commandGateway.send(new CreateFoodCartCommand(id));
     }
 
     @PostMapping("/{foodCartId}/select/{productId}/quantity/{quantity}")
-    public void selectProduct(@PathVariable("foodCartId") String foodCartId,
-                              @PathVariable("productId") String productId,
-                              @PathVariable("quantity") Integer quantity) {
-        commandGateway.send(new SelectProductCommand(
-                UUID.fromString(foodCartId), UUID.fromString(productId), quantity
-        ));
+    public CompletableFuture<Object> selectProduct(@PathVariable("foodCartId") String foodCartId,
+                                                   @PathVariable("productId") String productId,
+                                                   @PathVariable("quantity") Integer quantity) {
+        return commandGateway.send(
+                new SelectProductCommand(
+                        foodCartId, productId, quantity
+                )
+        );
     }
 
-    @PostMapping("/{foodCartId}/deselect/{productId}/quantity/{quantity}")
-    public void deselectProduct(@PathVariable("foodCartId") String foodCartId,
-                                @PathVariable("productId") String productId,
-                                @PathVariable("quantity") Integer quantity) {
-        commandGateway.send(new DeselectProductCommand(
-                UUID.fromString(foodCartId), UUID.fromString(productId), quantity
-        ));
+    @DeleteMapping("/{foodCartId}/select/{productId}/quantity/{quantity}")
+    public CompletableFuture<Object> deselectProduct(@PathVariable("foodCartId") String foodCartId,
+                                                     @PathVariable("productId") String productId,
+                                                     @PathVariable("quantity") Integer quantity) {
+        return commandGateway.send(
+                new DeselectProductCommand(
+                        foodCartId, productId, quantity
+                )
+        );
     }
 
     @GetMapping("/{foodCartId}")
     public CompletableFuture<FoodCartView> findFoodCart(@PathVariable("foodCartId") String foodCartId) {
         return queryGateway.query(
-                new FindFoodCartQuery(UUID.fromString(foodCartId)),
-                ResponseTypes.instanceOf(FoodCartView.class)
+                new FindFoodCartQuery(foodCartId), ResponseTypes.instanceOf(FoodCartView.class)
         );
     }
 }

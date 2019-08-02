@@ -1,23 +1,21 @@
 package io.axoniq.foodordering.coreapi
 
-import java.util.*
-
 class FoodCartCreatedEvent(
-        val foodCartId: UUID
+        val foodCartId: String
 )
 
 data class ProductSelectedEvent(
-        val foodCartId: UUID,
-        val productId: UUID,
+        val foodCartId: String,
+        val productId: String,
         val quantity: Int
 )
 
 data class ProductDeselectedEvent(
-        val foodCartId: UUID,
-        val productId: UUID,
+        val foodCartId: String,
+        val productId: String,
         val quantity: Int
 )
 
 data class OrderConfirmedEvent(
-        val foodCartId: UUID
+        val foodCartId: String
 )

@@ -1,0 +1,23 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${DB_HOST:127.0.0.1}:${DB_PORT:3306}/${DB_NAME:food_ordering}?createDatabaseIfNotExist=true&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:toor}
+
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        current_session_context_class: org.springframework.orm.hibernate5.SpringSessionContext
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        storage_engine: innodb
+        format_sql: false
+        show_sql: true
+        globally_quoted_ids: true
+        enable_lazy_load_no_trans: true
+        generate_statistics: false
+        hbm2ddl:
+          auto: update
+server:
+  port: 0
