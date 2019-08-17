@@ -1,14 +1,8 @@
 package io.axoniq.foodordering.query
 
-import org.springframework.data.jpa.repository.JpaRepository
-import javax.persistence.ElementCollection
-import javax.persistence.Entity
-import javax.persistence.Id
 
-@Entity
 data class FoodCartView(
-        @Id val foodCartId: String,
-        @ElementCollection val products: MutableMap<String, Int> = mutableMapOf()
+        val foodCartId: String, val products: MutableMap<String, Int> = mutableMapOf()
 ) {
 
     /**
@@ -37,4 +31,3 @@ data class FoodCartView(
 }
 
 
-interface FoodCartViewRepository : JpaRepository<FoodCartView, String>

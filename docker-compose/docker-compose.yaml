@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+
+  axon-server:
+    container_name: axon-server
+    image: axoniq/axonserver:4.2
+    ports:
+      - 8024:8024
+      - 8124:8124
+    environment:
+      - AXONSERVER_EVENTSTORE=/store/event
+      - AXONSERVER_LOGSTORE=/store/log
+    volumes:
+      - ./store:/store
+
+  mysql-server:
+    container_name: mysql-server
+    image:  mysql:8
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=toor

@@ -38,6 +38,7 @@ class FoodCart {
 
     @CommandHandler
     public void handle(DeselectProductCommand command) throws ProductDeselectionException {
+
         String productId = command.getProductId();
         int quantity = command.getQuantity();
 
